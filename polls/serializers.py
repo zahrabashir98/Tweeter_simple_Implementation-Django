@@ -3,8 +3,6 @@ from rest_framework import serializers
 
 from polls.models import TweetModel
 
-
-
 class TweetModelSerializer (serializers.ModelSerializer ):
    
     class Meta :
@@ -13,10 +11,12 @@ class TweetModelSerializer (serializers.ModelSerializer ):
 
     def delete(self ,instance,pk, validated_data):
         instance.delete(**validated_data)
+
         
 
     def create(self, validated_data):
         return TweetModel.objects.create(**validated_data)
+
 
     def update(self, instance, validated_data):
 
@@ -26,18 +26,3 @@ class TweetModelSerializer (serializers.ModelSerializer ):
         instance.save()
         return instance
 
-
-class LoginModelSerializer (serializers.ModelSerializer):
-    class Meta :
-        model= User
-        fields =('username', 'password')
-
-"""
-'userID', 'date'
-
-    class UserSeializer(serializers.ModelSerializer):
-        tweetmodels=serializers.PrimaryKeyRelatedField(many =True , queryset=TweetModel.objects.all())
-
-        class Meta :
-            model = User
-            fileds= ('userID' , 'Text' , 'tweetmodels')"""
