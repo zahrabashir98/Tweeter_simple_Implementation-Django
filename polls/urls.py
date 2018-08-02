@@ -3,8 +3,8 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from polls import views
 
 urlpatterns = [
-    url(r'^login/$', views.LoginView.as_view()),
-    url(r'^tweeter/$', views.TweeterPage.as_view())
+    # url(r'^login/$', views.LoginView.as_view()),
+    url(r'^tweet/$', views.TweeterPage.as_view())
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

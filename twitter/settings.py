@@ -26,24 +26,20 @@ SECRET_KEY = 'xro31z1%vvi)dpucb^cie^iq0&_r6wkac9!6t(ryyok67skl*@'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-REST_SESSION_LOGIN=False
+# REST_SESSION_LOGIN=False
 
 # Application definition
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-      #  'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-       
     ),
 }
 
 INSTALLED_APPS = [
-    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,8 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_auth',
-    'rest_framework.authtoken',
+    # 'rest_framework.authtoken',
     'polls.apps.PollsConfig',
 ]
 

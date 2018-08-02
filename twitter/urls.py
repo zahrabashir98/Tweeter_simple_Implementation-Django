@@ -18,15 +18,17 @@ from django.contrib import admin
 from django.contrib.auth.views import login
 from django.urls import include , path
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
 #from polls.views import login_view , home
 from polls import views
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^' , include('polls.urls')),
   #  path('rest-auth/', include('rest_auth.urls')),
     url(r'^api-token-auth/', obtain_jwt_token),
-   # url(r'polls',include('polls.urls')),
- 
+    url(r'^api-token-refresh/', refresh_jwt_token),
+    url(r'^api-token-verify/', verify_jwt_token),
+    # url(r'polls',include('polls.urls')),
 ]

@@ -9,46 +9,33 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from polls.serializers import TweetModelSerializer,LoginModelSeializer
+from polls.serializers import TweetModelSerializer #,LoginModelSeializer
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-# Create your views here.
-
-class LoginView(APIView):
-
-    def post (self , request , format = None):
-        serializer= LoginModelSeializer(data=request.data)
-        if serializer.is_valid():
-            user=request.user
-            print(user)
-            login(request,user)
-            u = User.objects.all()
-            print(u)
-            serializer.save()
-            return Response(serializer.data , status=status.HTTP_201_CREATED)
-        return Response (serializer.errors , status =status.HTTP_400_BAD_REQUEST)
-
-    
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 
 class TweeterPage(APIView):
-    @login_required
-    def post(self , request ,format= None):
-        serializer=TweetModelSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data , status=status.HTTP_201_CREATED)
-        return Response (serializer.errors , status =status.HTTP_400_BAD_REQUEST)
-   # @login_required
+    # def post(self , request ,format= None):
+        # serializer=TweetModelSerializer(data=request.data)
+        # if serializer.is_valid():
+            # serializer.save()
+            # return Response(serializer.data , status=status.HTTP_201_CREATED)
+        # return Response (serializer.errors , status =status.HTTP_400_BAD_REQUEST)
+    authentication_classes = (JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+
     def get(self, request, format=None):
         tweetmodels = TweetModel.objects.all()
         serializer = TweetModelSerializer(tweetmodels, many=True)
         print(request.user)
         return Response(serializer.data)
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(TweeterPage, self).dispatch(*args, **kwargs)
+  #   @method_decorator(login_required)
+    # def dispatch(self, *args, **kwargs):
+        # return super(TweeterPage, self).dispatch(*args, **kwargs)
    
             
 """
