@@ -31,7 +31,7 @@ REST_SESSION_LOGIN=False
 # Application definition
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+       # 'rest_framework.permissions.IsAuthenticated',
       #  'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'rest_auth',
     'rest_framework.authtoken',
     'polls.apps.PollsConfig',
+   
 ]
 
 MIDDLEWARE = [

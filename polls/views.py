@@ -1,18 +1,23 @@
 from django.shortcuts import render ,redirect
 from django.http import HttpResponseRedirect,HttpResponse
+
+from django.utils.decorators import method_decorator
+from django.http import Http404
+
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm , AuthenticationForm
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+
 from polls.forms import TwittForm
 from datetime import datetime
 from polls.models import TweetModel
-from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from polls.serializers import TweetModelSerializer,LoginModelSeializer
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-# Create your views here.
+from polls.serializers import TweetModelSerializer
+
+
 
 class LoginView(APIView):
 
@@ -32,29 +37,51 @@ class LoginView(APIView):
 
 
 class TweeterPage(APIView):
+    #@login_required
+ 
+    def get_object(self, id):
+        try:
+            return TweetModel.objects.get(id=id)
+        except TweetModel.DoesNotExist:
+            raise Http404
+
     @login_required
     def post(self , request ,format= None):
         serializer=TweetModelSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data , status=status.HTTP_201_CREATED)
-        return Response (serializer.errors , status =status.HTTP_400_BAD_REQUEST)
-   # @login_required
-    def get(self, request, format=None):
+        return Response(serializer.errors, status =status.HTTP_400_BAD_REQUEST)
+   
+    @login_required
+    def delete(self, request, format=None):
+        print(request.data['id'])
+        deleted = self.get_object(request.data['id'])
+       
+        deleted.delete()
+        return Response({"message": "tweet deleted"},status=status.HTTP_200_OK)
+    @login_required
+    def get(self, request, format=None): 
         tweetmodels = TweetModel.objects.all()
         serializer = TweetModelSerializer(tweetmodels, many=True)
         print(request.user)
         return Response(serializer.data)
+    @login_required
+    def put(self, request, format=None):
+        tweetmodels = self.get_object(request.data['id'])
+        serializer = TweetModelSerializer(tweetmodels, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+           # return Response(serializer.data)
+        if serializer.errors :
+              return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"message":"updated" }, status=status.HTTP_200_OK)
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(TweeterPage, self).dispatch(*args, **kwargs)
-   
-            
+
+
+
 """
-
-
-
 def login_view(request):
 
    
