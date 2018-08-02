@@ -1,0 +1,37 @@
+
+
+<html>
+<head>
+    <title>Tweet now</title>
+</head>
+<body>
+    <h1>Twitter</h1>
+
+    {% if form.errors %}
+        <p style="color: red;">
+            Please correct the error{{ form.errors|pluralize }} below.
+        </p>
+    {% endif %}
+
+    <form action="" method="post" novalidate>
+           
+        
+    
+        <table>
+            {{ form.as_table }}
+        </table>
+        {% csrf_token %}
+        <input type="submit" value="twitt" >
+       
+    </form>
+
+    <h2>
+            {%for t in alltexts %}
+            {{t.userID}} : {{t.text}}
+            <br>
+            {%endfor%}
+            </h2>
+
+
+</body>
+</html>
