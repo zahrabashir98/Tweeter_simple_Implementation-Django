@@ -4,11 +4,10 @@ from polls import views
 
 urlpatterns = [
     # url(r'^login/$', views.LoginView.as_view()),
-    url(r'^tweet/$', views.TweeterPage.as_view())
+    url(r'^tweeter/$', views.TweeterPage.as_view())
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
-
 
    #url(r'^login/$', login, {'template_name': 'polls/login.html'}, name='login'),
     #url(r'^login/$',login_view, name='login')

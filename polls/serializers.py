@@ -7,7 +7,7 @@ class TweetModelSerializer (serializers.ModelSerializer ):
    
     class Meta :
         model =TweetModel
-        fields = "__all__"
+        fields = ('text',)
 
     def delete(self ,instance,pk, validated_data):
         instance.delete(**validated_data)
@@ -21,8 +21,15 @@ class TweetModelSerializer (serializers.ModelSerializer ):
     def update(self, instance, validated_data):
 
         instance.text = validated_data.get('text', instance.text)
-       # instance.userID = validated_data.get('code', instance.userID)
+      #  instance.userID = validated_data.get('code', instance.userID)
        # instance.date = validated_data.get('linenos', instance.date)
         instance.save()
         return instance
 
+
+class UserSerializer(serializers.ModelSerializer):
+    Tweets = serializers.PrimaryKeyRelatedField(many=True, queryset=TweetModel.objects.all())
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'Tweets')
