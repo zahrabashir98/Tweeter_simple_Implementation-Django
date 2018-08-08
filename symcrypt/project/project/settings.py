@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-from datetime import  timedelta
+from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -34,7 +34,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
                 'rest_framework.authentication.TokenAuthentication',
-   ),
+    ),
     'DEFAULT_PERMISSION_CLASSES': (
         # 'rest_framework.permissions.IsAuthenticated',
         # 'rest_framework.permissions.IsAdminUser',
@@ -50,7 +50,7 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
 
     'JWT_EXPIRATION_DELTA': timedelta(days=1),
-    
+
 
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
 
@@ -68,9 +68,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'phonenumber_field',
     'phone_field',
-    
-     
-    
+
 ]
 
 
@@ -82,7 +80,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
+
 ]
 
 ROOT_URLCONF = 'project.urls'

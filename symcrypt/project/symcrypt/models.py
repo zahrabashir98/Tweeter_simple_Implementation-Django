@@ -9,11 +9,11 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     print(type(user))
     phone_number = models.CharField(max_length=500, blank=True)
-    pre_phone = models.CharField(max_length=500,blank=True)
+    pre_phone = models.CharField(max_length=500, blank=True)
     sms_code = models.CharField(max_length=300, blank=True)
-    #sms_code = models.IntegerField(blank=True)
     token = models.CharField(max_length=60, blank=True)
-    pic  = models.ImageField(upload_to = 'images/' ,default = 'images/img.jpg')
+    pic = models.ImageField(upload_to='images/', default='images/img.jpg')
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -35,5 +35,6 @@ class Contact(models.Model):
     phone_number = models.CharField(max_length=30)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+
 class File(models.Model):
-  file = models.FileField(blank=False, null=False)
+    file = models.FileField(blank=False, null=False)
