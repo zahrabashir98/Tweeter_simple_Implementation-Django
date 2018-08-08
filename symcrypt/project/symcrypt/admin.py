@@ -1,7 +1,5 @@
 from django.contrib import admin
-from symcrypt.models import Sms,TokenPhone,Contact
-# Register your models here.
+from symcrypt.models import Contact, Profile
 
-admin.site.register(Sms)
-admin.site.register(TokenPhone)
 admin.site.register(Contact)
+admin.site.register(Profile)

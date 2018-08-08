@@ -2,85 +2,101 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from symcrypt.serializers import UserSerializer
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
-from symcrypt.models import Sms ,TokenPhone , Contact
+from symcrypt.models import Contact, Profile
 import random
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-import uuid 
-
-
-
-
+import uuid
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class UserCreate(APIView):
-    """ 
-    Creates the user. 
-    """
 
     def post(self, request, format='json'):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            print (type(request.data))
-            #Sms.user=request.user
-            sms = Sms(sms_code= generate(), phone_number=request.data['phone_number'])
-            table = TokenPhone()
-            print(sms.phone_number)
-            #print(sms.objects.all())
-            sms.save()
-            user = serializer.save()
-            if user:
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        return Response (serializer.errors ,status=status.HTTP_400_BAD_REQUEST)
+        print("inja")
+        userr = User(username=request.data['username'])
+        userr.set_password(request.data['password'])
+        userr.save()
+        userr.profile.phone_number = request.data['phone_number']
+        userr.profile.sms_code = str(random.randint(1000, 10000))
+        userr.profile.save()
+        print(userr.profile)
+        if userr:
+            return Response({"message": "user created"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"message": "couldnt make"}, status=status.HTTP_400_BAD_REQUEST)
 
-
-def generate():
-    print("dakhele generate")
-    r = random.randint(1000,10000)
-    Sms.sms_code = r
-    #print(Sms.sms_code)
-    return r 
-        
 
 class Verification(APIView):
+
+    def post(self,request,format='json'):
+        user = Profile.objects.get(phone_number=request.data['phone_number'])
+        print(user.sms_code)
+        print(request.data['sms_code'])
+        print(user.pic)
+        if user.sms_code == request.data['sms_code']:
+            print("here")
+            return Response({"message": "verified"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "Wrong code"}, status=status.HTTP_400_BAD_REQUEST)
+
+class Update(APIView):
     
     def post(self,request,format='json'):
-        sms=Sms.objects.get(phone_number=request.data['phone_number'])
-        print(type(sms.sms_code))
-        print("*************************")
-        print(type(request.data['sms_code']))
-        if(sms.sms_code==int(request.data['sms_code'])):
-            print("here")
-            return Response({"message":"verified"},status=status.HTTP_200_OK)
-    
-        else:
-            return Response({"message":"Wrong code"},status=status.HTTP_400_BAD_REQUEST)
-    
+        userr = Profile.objects.get(phone_number=request.data['pre_phone'])
+        userr.phone_number = request.data['phone_number']
+        request.user.username = request.data['username']
+        request.user.email = request.data['email']
+        request.user.save()
+        userr.save()
+        print(userr)
+        return Response({"message":"done"}, status=status.HTTP_200_OK)
+
+class GetImage(APIView):
+    # def app_save(request):
+    #if request.method == 'POST':
+        
+    def post(self , request , format= 'json'):
+        user = Profile.objects.get(phone_number=request.data['phone_number'])
+        user.pic=request.FILES.get('img')
+        print (user.pic)
+    #    newpic = Profile(pic=request.FILES.get('img'))
+        user.save()
+        return Response({"message":"done"},status=status.HTTP_200_OK)
+
+
 
 class ForgetPassword(APIView):
+
     def post(self,request, format='json'):
-        t = TokenPhone(phone_number=request.data['phone_number'] , token=uuid.uuid4() )
-        t.save()
-        return Response({"message":"Ok , now check your"},status=status.HTTP_200_OK)
+        user = Profile.objects.get(phone_number=request.data['phone_number'])
+        user.token = uuid.uuid4()
+        user.save()
+        return Response({"message": "Ok , now check your"}, status=status.HTTP_200_OK)
 
 
 class SetNewPassword(APIView):
-    def post(self, request, format='json'):
-        t = TokenPhone.objects.get(phone_number=request.data['phone_number'])
-        if request.data['token']==t.token :
-            print("equal")
-            user = User.objects.get(username=request.data['phone_number'])
-            user.password=request.data['password']
-            user.save()
-            return Response({"message":"successfuly changed"}, status=status.HTTP_200_OK)
-        else:
-            return Response({"message":"wrong url"},status=status.HTTP_404_NOT_FOUND)
+    authentication_classes = (JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
- 
+    def post(self, request, format='json'):
+        user = Profile.objects.get(phone_number=request.data['phone_number'])
+    
+        if request.data['token'] == user.token:
+            print("equal")
+            print(request.user.password)
+            request.user.set_password(request.data['password'])
+            print(request.user.password)
+            request.user.save()
+            print()
+            user.save()
+            return Response({"message": "successfuly changed"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "wrong url"}, status=status.HTTP_404_NOT_FOUND)
+
+
 class ContactView(APIView):
 
     authentication_classes = (JSONWebTokenAuthentication,)
@@ -90,6 +106,20 @@ class ContactView(APIView):
         print("sfbjhbsakcbkanckan")
         print(request.user)
         for contact in request.data["contacts"]:
-            u= Contact(name=contact['name'] , phone_number = contact['phone_number'] , user=request.user)
+            u = Contact(name=contact['name'], phone_number=contact['phone_number'], user=request.user)
             u.save()
-        return Response({"message":"successfuly changed"}, status=status.HTTP_200_OK)
+        if u:
+            return Response({"message": "successfuly changed"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "sth went wrong!!!"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FileView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+    def post(self, request, *args, **kwargs):
+        file_serializer = FileSerializer(data=request.data)
+        if file_serializer.is_valid():
+            file_serializer.save()
+            return Response(file_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
